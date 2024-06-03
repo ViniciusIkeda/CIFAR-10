@@ -33,37 +33,37 @@ print('Test Labels Shape:       ', y_test.shape)
 # CIFAR-10 classes
 class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
-# Create a new figure
+# Crie uma nova figura
 plt.figure(figsize=(15, 15))
 
-# Loop over the first 25 images
+# Faça um loop nas primeiras 25 imagens
 for i in range(64):
-    # Create a subplot for each image
+    # Crie uma subtrama para cada imagem
     plt.subplot(8, 8, i + 1)
     plt.xticks([])
     plt.yticks([])
     plt.grid(False)
 
-    # Display the image
+    # Exibir a imagem
     plt.imshow(X_train[i])
 
-    # Set the label as the title
+    # Defina o rótulo como o título
     plt.title(class_names[y_train[i][0]], fontsize=12)
 
-# Display the figure
+# Exibir a figura
 plt.show()
 
-# Convert pixel values data type to float32
+# Converter tipo de dados de valores de pixel para float32
 X_train = X_train.astype('float32')
 X_test  = X_test.astype('float32')
 X_valid = X_valid.astype('float32')
 
-# Calculate the mean and standard deviation of the training images
+# Calcule a média e o desvio padrão das imagens de treinamento
 mean = np.mean(X_train)
 std  = np.std(X_train)
 
-# Normalize the data
-# The tiny value 1e-7 is added to prevent division by zero
+# normalizar os dados
+# O pequeno valor 1e-7 é adicionado para evitar a divisão por zero
 X_train = (X_train-mean)/(std+1e-7)
 X_test  = (X_test-mean) /(std+1e-7)
 X_valid = (X_valid-mean)/(std+1e-7)
@@ -72,118 +72,118 @@ y_train = to_categorical(y_train, 10)
 y_valid = to_categorical(y_valid, 10)
 y_test  = to_categorical(y_test, 10)
 
-# Data augmentation
+# Aumento de dados
 data_generator = ImageDataGenerator(
-    # Rotate images randomly by up to 15 degrees
+    # Gire imagens aleatoriamente em até 15 graus
     rotation_range=15,
 
-    # Shift images horizontally by up to 12% of their width
+    # Mude as imagens horizontalmente em até 12% de sua largura
     width_shift_range=0.12,
 
-    # Shift images vertically by up to 12% of their height
+    # Mude as imagens verticalmente em até 12% de sua altura
     height_shift_range=0.12,
 
-    # Randomly flip images horizontally
+    # Virar imagens aleatoriamente na horizontal
     horizontal_flip=True,
 
-    # Zoom images in by up to 10%
+    # Amplie as imagens em até 10%
     zoom_range=0.1,
 
-    # Change brightness by up to 10%
+    # Altere o brilho em até 10%
     brightness_range=[0.9, 1.1],
 
-    # Shear intensity (shear angle in counter-clockwise direction in degrees)
+    # Intensidade de cisalhamento (ângulo de cisalhamento no sentido anti-horário em graus)
     shear_range=10,
 
-    # Channel shift intensity
+    # Intensidade de mudança de canal
     channel_shift_range=0.1,
 )
 
-# Initialize a sequential model
+# Inicialize um modelo sequencial
 model = Sequential()
 
-# Set the weight decay value for L2 regularization
+# Defina o valor de redução de peso para regularização L2
 weight_decay = 0.0001
 
-# Add the first convolutional layer with 32 filters of size 3x3
+# Adicione a primeira camada convolucional com 32 filtros de tamanho 3x3
 model.add(Conv2D(filters=32, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay),
                  input_shape=X_train.shape[1:]))
-# Add batch normalization layer
+# Adicionar camada de normalização em lote
 model.add(BatchNormalization())
 
-# Add the second convolutional layer similar to the first
+# Adicione a segunda camada convolucional semelhante à primeira
 model.add(Conv2D(filters=32, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay)))
 model.add(BatchNormalization())
 
-# Add the first max pooling layer with pool size of 2x2
+# Adicione a primeira camada máxima de pooling com tamanho de pool de 2x2
 model.add(MaxPooling2D(pool_size=(2, 2)))
 # Add dropout layer with 0.2 dropout rate
 model.add(Dropout(rate=0.2))
 
-# Add the third and fourth convolutional layers with 64 filters
+# Adicione a terceira e quarta camadas convolucionais com 64 filtros
 model.add(Conv2D(filters=64, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay)))
 model.add(BatchNormalization())
 model.add(Conv2D(filters=64, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay)))
 model.add(BatchNormalization())
 
-# Add the second max pooling layer and increase dropout rate to 0.3
+# Adicione a segunda camada máxima de pooling e aumente a taxa de abandono para 0,3
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(rate=0.3))
 
-# Add the fifth and sixth convolutional layers with 128 filters
+# Adicione a quinta e a sexta camadas convolucionais com 128 filtros
 model.add(Conv2D(filters=128, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay)))
 model.add(BatchNormalization())
 model.add(Conv2D(filters=128, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay)))
 model.add(BatchNormalization())
 
-# Add the third max pooling layer and increase dropout rate to 0.4
+# Adicione a terceira camada máxima de pooling e aumente a taxa de abandono para 0,4
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(rate=0.4))
 
-# Add the seventh and eighth convolutional layers with 256 filters
+# Adicione a sétima e a oitava camadas convolucionais com 256 filtros
 model.add(Conv2D(filters=256, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay)))
 model.add(BatchNormalization())
 model.add(Conv2D(filters=256, kernel_size=(3,3), padding='same', activation='relu', kernel_regularizer=l2(weight_decay)))
 model.add(BatchNormalization())
 
-# Add the fourth max pooling layer and increase dropout rate to 0.5
+# Adicione a quarta camada máxima de pooling e aumente a taxa de abandono para 0,5
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(rate=0.5))
 
-# Flatten the tensor output from the previous layer
+# Achate a saída do tensor da camada anterior
 model.add(Flatten())
 
-# Add a fully connected layer with softmax activation function for outputting class probabilities
+# Adicione uma camada totalmente conectada com função de ativação softmax para gerar probabilidades de classe
 model.add(Dense(10, activation='softmax'))
 
 model.summary()
 
-# Set the batch size for the training
+# Defina o tamanho do lote para o treinamento
 batch_size = 64
 
-# Set the maximum number of epochs for the training
+# Defina o número máximo de épocas para o treinamento
 epochs = 300
 
-# Define the optimizer (Adam)
+# Defina o otimizador (Adam)
 optimizer = Adam(learning_rate=0.0005)
 
-# Compile the model with the defined optimizer, loss function, and metrics
+# Compile o modelo com o otimizador definido, função de perda e métricas
 model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Add ReduceLROnPlateau callback
-# Here, the learning rate will be reduced by half (factor=0.5) if no improvement in validation loss is observed for 10 epochs
+# Adicionar retorno de chamada ReduceLROnPlateau
+# Aqui, a taxa de aprendizagem será reduzida pela metade (fator = 0,5) se nenhuma melhoria na perda de validação for observada por 10 épocas
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=10, min_lr=0.00001)
 
-# Add EarlyStopping callback
-# Here, training will be stopped if no improvement in validation loss is observed for 40 epochs.
-# The `restore_best_weights` parameter ensures that the model weights are reset to the values from the epoch
-# with the best value of the monitored quantity (in this case, 'val_loss').
+# Adicionar retorno de chamada EarlyStopping
+# Aqui, o treinamento será interrompido se nenhuma melhoria na perda de validação for observada por 40 épocas.
+# O parâmetro `restore_best_weights` garante que os pesos do modelo sejam redefinidos para os valores da época
+# com o melhor valor da quantidade monitorada (neste caso, 'val_loss').
 early_stopping = EarlyStopping(monitor='val_loss', patience=40, restore_best_weights=True, verbose=1)
 
-# Fit the model on the training data, using the defined batch size and number of epochs
-# The validation data is used to evaluate the model's performance during training
-# The callbacks implemented are learning rate reduction when a plateau is reached in validation loss and
-# stopping training early if no improvement is observed
+# Ajustar o modelo aos dados de treinamento, usando o tamanho do lote definido e o número de épocas
+# Os dados de validação são usados ​​para avaliar o desempenho do modelo durante o treinamento
+# Os retornos de chamada implementados são a redução da taxa de aprendizagem quando um platô é atingido na perda de validação e
+# parar de treinar cedo se nenhuma melhora for observada
 model.fit(data_generator.flow(X_train, y_train, batch_size=batch_size),
           epochs=epochs,
           validation_data=(X_valid, y_valid),
@@ -192,14 +192,14 @@ model.fit(data_generator.flow(X_train, y_train, batch_size=batch_size),
 
 plt.figure(figsize=(15,6))
 
-# Plotting the training and validation loss
+# Traçando a perda de treinamento e validação
 plt.subplot(1, 2, 1)
 plt.plot(model.history.history['loss'], label='Train Loss', color='#8502d1')
 plt.plot(model.history.history['val_loss'], label='Validation Loss', color='darkorange')
 plt.legend()
 plt.title('Loss Evolution')
 
-# Plotting the training and validation accuracy
+# Traçando a precisão do treinamento e validação
 plt.subplot(1, 2, 2)
 plt.plot(model.history.history['accuracy'], label='Train Accuracy', color='#8502d1')
 plt.plot(model.history.history['val_accuracy'], label='Validation Accuracy', color='darkorange')
@@ -208,35 +208,35 @@ plt.title('Accuracy Evolution')
 
 plt.show()
 
-# Use the model to make predictions, evaluate on test data
+# Use o modelo para fazer previsões e avaliar dados de teste
 test_loss, test_acc = model.evaluate(X_test, y_test, verbose=1)
 
 print('\nTest Accuracy:', test_acc)
 print('Test Loss:    ', test_loss)
 
-# Fetch the raw image from GitHub
+# Obtenha a imagem bruta do GitHub
 url = "https://raw.githubusercontent.com/FarzadNekouee/Keras-CIFAR10-CNN-Model/master/truck_sample.png"
 resp = urllib.request.urlopen(url)
 image = np.asarray(bytearray(resp.read()), dtype="uint8")
 image = cv2.imdecode(image, cv2.IMREAD_UNCHANGED)
 
-# Convert the image from BGR to RGB
+# Converta a imagem de BGR para RGB
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-# Display the image
+# Exibir a imagem
 plt.imshow(image)
 plt.xticks([])
 plt.yticks([])
 plt.grid(False)
 plt.show()
 
-# Resize it to 32x32 pixels
+# Redimensione para 32x32 pixels
 image = cv2.resize(image, (32,32))
 
-# Normalize the image
+# Normalizar a imagem
 image = (image-mean)/(std+1e-7)
 
-# Add an extra dimension because the model expects a batch of images
+# Adicione uma dimensão extra porque o modelo espera um lote de imagens
 image = image.reshape((1, 32, 32, 3))
 
 prediction = model.predict(image)
